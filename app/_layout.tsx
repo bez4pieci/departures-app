@@ -1,27 +1,25 @@
 import '../global.css';
 
+import { Text } from '@/components/ui/text';
 import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { NAV_THEME } from '@/lib/constants';
-import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
+import { StationProvider } from '@/lib/station-context';
+import { Ionicons } from '@expo/vector-icons';
+import { DarkTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import React, { useRef } from 'react';
-import { Platform } from 'react-native';
-import { useColorScheme } from '~/lib/useColorScheme';
+import { Platform, TouchableOpacity } from 'react-native';
 
-const LIGHT_THEME: Theme = {
-  ...DefaultTheme,
-  colors: NAV_THEME.light,
-};
 const DARK_THEME: Theme = {
   ...DarkTheme,
   colors: NAV_THEME.dark,
 };
 
 export default function RootLayout() {
+  const router = useRouter();
   const hasMounted = useRef(false);
-  const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
   if (Platform.OS === 'web') {
@@ -42,7 +40,7 @@ export default function RootLayout() {
       // Adds the background color to the html element to prevent white background on overscroll.
       document.documentElement.classList.add('bg-background');
     }
-    setAndroidNavigationBar(isDarkColorScheme ? 'dark' : 'light');
+    setAndroidNavigationBar('dark');
     setIsColorSchemeLoaded(true);
     hasMounted.current = true;
   }, []);
@@ -51,17 +49,44 @@ export default function RootLayout() {
     return null;
   }
 
-  return <ThemeProvider value={DARK_THEME}>
-    <StatusBar style="light" />
-    <Stack>
-      <Stack.Screen
-        name='index'
-        options={{
-          title: 'Departures',
-        }}
-      />
-    </Stack>
-  </ThemeProvider>;
+  return (
+    <StationProvider>
+      <ThemeProvider value={DARK_THEME}>
+        <StatusBar style="light" />
+        <Stack>
+          <Stack.Screen
+            name='index'
+            options={{
+              title: 'Departures',
+              headerRight: () => (
+                <TouchableOpacity
+                  onPress={() => router.push('/settings')}
+                  className="mr-4"
+                >
+                  <Ionicons name="settings-outline" size={24} color={NAV_THEME.dark.text} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+          <Stack.Screen
+            name='settings'
+            options={{
+              title: 'Select a station',
+              presentation: 'modal',
+              headerRight: () => (
+                <TouchableOpacity
+                  onPress={() => router.back()}
+                  className="mr-4"
+                >
+                  <Text className="text-primary font-departure-mono">Done</Text>
+                </TouchableOpacity>
+              ),
+            }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </StationProvider>
+  );
 }
 
 const useIsomorphicLayoutEffect =

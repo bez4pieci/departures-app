@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
+import { useStation } from '@/lib/station-context';
 import createClient from '@/utils/hafas-rest-api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from "react-native";
@@ -19,18 +20,21 @@ type Departure = {
 
 
 export default function Index() {
+  const { selectedStation } = useStation();
   const [departures, setDepartures] = useState<Departure[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchDepartures = useCallback(async () => {
+    if (!selectedStation) {
+      setError('Please select a station in settings');
+      return;
+    }
+
     try {
       setError(null);
 
-      const Suedkreuz = '900058101';
-      const Viktoria = '900055101';
-
-      const results = await client.departures(Suedkreuz, {
+      const results = await client.departures(selectedStation.id, {
         duration: 60,
         linesOfStops: true,
         remarks: false,
@@ -60,7 +64,7 @@ export default function Index() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch departures');
     }
-  }, []);
+  }, [selectedStation]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -87,8 +91,25 @@ export default function Index() {
     );
   }
 
+  if (!selectedStation) {
+    return (
+      <Card className="m-2">
+        <CardContent className="p-2">
+          <Text className="text-muted-foreground font-departure-mono">
+            Please select a station in settings to view departures
+          </Text>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <View className="flex-1 bg-background px-0 py-2">
+      {/* Station Name Header */}
+      <View className="px-2 py-1 mb-1">
+        <Text className="text-lg font-bold font-departure-mono">{selectedStation.name}</Text>
+      </View>
+
       {/* Technical Header Row */}
       <View className="flex-row items-center border-b border-border bg-card/80 dark:bg-black/80 px-2 py-2 mb-1">
         <Text className="flex-[1.7] text-sm text-muted-foreground tracking-widest font-departure-mono uppercase">Time / Line</Text>
