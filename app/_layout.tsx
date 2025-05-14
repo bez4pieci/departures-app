@@ -1,6 +1,5 @@
 import '../global.css';
 
-import { Text } from '@/components/ui/text';
 import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { NAV_THEME } from '@/lib/constants';
 import { StationProvider } from '@/lib/station-context';
@@ -78,7 +77,7 @@ export default function RootLayout() {
                   onPress={() => router.back()}
                   className="mr-4"
                 >
-                  <Text className="text-primary font-departure-mono">Done</Text>
+                  <Ionicons name="checkmark" size={24} color={NAV_THEME.dark.text} />
                 </TouchableOpacity>
               ),
             }}
