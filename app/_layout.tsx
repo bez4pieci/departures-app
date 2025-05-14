@@ -1,6 +1,5 @@
 import '../global.css';
 
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { NAV_THEME } from '@/lib/constants';
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
@@ -43,7 +42,7 @@ export default function RootLayout() {
       // Adds the background color to the html element to prevent white background on overscroll.
       document.documentElement.classList.add('bg-background');
     }
-    setAndroidNavigationBar(colorScheme);
+    setAndroidNavigationBar(isDarkColorScheme ? 'dark' : 'light');
     setIsColorSchemeLoaded(true);
     hasMounted.current = true;
   }, []);
@@ -52,14 +51,13 @@ export default function RootLayout() {
     return null;
   }
 
-  return <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-    <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+  return <ThemeProvider value={DARK_THEME}>
+    <StatusBar style="light" />
     <Stack>
       <Stack.Screen
         name='index'
         options={{
           title: 'Departures',
-          headerRight: () => <ThemeToggle />,
         }}
       />
     </Stack>

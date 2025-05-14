@@ -30,8 +30,8 @@ export default function Index() {
       const Suedkreuz = '900058101';
       const Viktoria = '900055101';
 
-      const results = await client.departures(Viktoria, {
-        duration: 30,
+      const results = await client.departures(Suedkreuz, {
+        duration: 60,
         linesOfStops: true,
         remarks: false,
         language: 'en',
@@ -77,61 +77,59 @@ export default function Index() {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const renderItem = ({ item }: { item: Departure }) => {
-    const isDelayed = item.when && item.plannedWhen && item.when !== item.plannedWhen;
-    const displayTime = item.when || item.plannedWhen;
-
-    return (
-      <Card className={`mb-1.5 font-departure-mono ${item.cancelled ? 'opacity-50' : ''}`}>
-        <CardContent className="p-2 flex-row items-center justify-between">
-          <View className="flex-row items-center flex-1">
-            <View className="w-20 mr-3">
-              <Text className={`text-base font-medium ${isDelayed ? 'text-destructive' : ''}`}>
-                {displayTime ? formatTime(displayTime) : '?'}
-              </Text>
-              {isDelayed && item.plannedWhen && (
-                <Text className="text-muted-foreground text-xs">
-                  {formatTime(item.plannedWhen)}
-                </Text>
-              )}
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-medium">{item.line}</Text>
-              <Text className={`text-sm text-muted-foreground ${item.cancelled ? 'line-through' : ''}`}>
-                {item.direction}
-              </Text>
-            </View>
-          </View>
-          {item.cancelled && (
-            <Text className="text-destructive text-sm ml-2">Cancelled</Text>
-          )}
-        </CardContent>
-      </Card>
-    );
-  };
-
   if (error) {
     return (
       <Card className="m-2">
         <CardContent className="p-2">
-          <Text className="text-destructive">{error}</Text>
+          <Text className="text-destructive font-departure-mono">{error}</Text>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <View className='flex-1 bg-background'>
-      <Text style={{ fontFamily: 'DepartureMono-Regular' }}>DepartureMono-Regular</Text>
-      <Text className='font-departure-mono'>DepartureMono-Regular</Text>
+    <View className="flex-1 bg-background px-0 py-2">
+      {/* Technical Header Row */}
+      <View className="flex-row items-center border-b border-border bg-card/80 dark:bg-black/80 px-2 py-2 mb-1">
+        <Text className="flex-[1.7] text-sm text-muted-foreground tracking-widest font-departure-mono uppercase">Time / Line</Text>
+        <Text className="flex-[2.3] text-sm text-muted-foreground tracking-widest font-departure-mono uppercase">Direction</Text>
+        <Text className="w-20 text-sm text-muted-foreground tracking-widest font-departure-mono uppercase text-right">Status</Text>
+      </View>
       <FlatList
         data={departures}
-        renderItem={renderItem}
+        renderItem={({ item }) => {
+          const isDelayed = item.when && item.plannedWhen && item.when !== item.plannedWhen;
+          const displayTime = item.when || item.plannedWhen;
+          return (
+            <View
+              className={`flex-row items-center border-b border-dashed border-border bg-card/60 dark:bg-black/60 px-2 py-3 font-departure-mono ${item.cancelled ? 'opacity-50' : ''}`}
+            >
+              {/* Time and Line */}
+              <View className="flex-[1.7] justify-center items-start">
+                <Text className={`text-3xl font-bold font-departure-mono ${isDelayed ? 'text-orange-500' : 'text-foreground'}`}>{displayTime ? formatTime(displayTime) : '?'}</Text>
+                {isDelayed && item.plannedWhen && (
+                  <Text className="text-xs text-muted-foreground font-departure-mono line-through">{formatTime(item.plannedWhen)}</Text>
+                )}
+                <Text className="text-lg font-semibold font-departure-mono text-foreground mt-1">{item.line}</Text>
+              </View>
+              {/* Direction */}
+              <Text className={`flex-[2.3] text-base font-departure-mono ${item.cancelled ? 'line-through text-muted-foreground' : 'text-foreground'} ml-1`}>{item.direction}</Text>
+              {/* Status */}
+              <View className="w-20 items-end">
+                {item.cancelled ? (
+                  <Text className="text-red-600 text-base font-bold font-departure-mono uppercase">Cancelled</Text>
+                ) : isDelayed ? (
+                  <Text className="text-orange-500 text-base font-bold font-departure-mono uppercase">Delayed</Text>
+                ) : null}
+              </View>
+            </View>
+          );
+        }}
         keyExtractor={(item) => item.tripId}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{ padding: 8 }}
+        contentContainerStyle={{ paddingBottom: 8 }}
       />
     </View>
   );
