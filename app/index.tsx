@@ -106,23 +106,24 @@ export default function Index() {
   return (
     <FlatList
       data={departures}
+      contentInsetAdjustmentBehavior="automatic"
       renderItem={({ item }) => {
         const isDelayed = item.when && item.plannedWhen && item.when !== item.plannedWhen;
         const displayTime = item.when || item.plannedWhen;
         return (
           <TextClassContext.Provider value="font-departure-mono">
-            <View
-              className={`flex-row items-start border-b border-dashed border-border px-2 py-3 ${item.cancelled ? 'opacity-40' : ''}`}
-            >
-              <View className="w-32">
-                <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{displayTime ? formatTime(displayTime) : '?'}</Text>
-                {isDelayed && item.plannedWhen && (
-                  <Text className="text-base text-muted-foreground line-through">{formatTime(item.plannedWhen)}</Text>
-                )}
-              </View>
-              <View className="flex-1">
-                <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{item.line}</Text>
-                <Text className={`text-base font-departure-mono ml-1`}>{item.direction}</Text>
+            <View className={`border-b border-solid border-border`}>
+              <View className={`flex-row items-start px-2 py-3 ${item.cancelled ? 'opacity-40' : ''}`}>
+                <View className="w-32">
+                  <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{displayTime ? formatTime(displayTime) : '?'}</Text>
+                  {isDelayed && item.plannedWhen && (
+                    <Text className="text-base text-muted-foreground line-through">{formatTime(item.plannedWhen)}</Text>
+                  )}
+                </View>
+                <View className="flex-1">
+                  <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{item.line}</Text>
+                  <Text className={`text-base font-departure-mono ml-1`}>{item.direction}</Text>
+                </View>
               </View>
             </View>
           </TextClassContext.Provider>
