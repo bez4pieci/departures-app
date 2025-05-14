@@ -2,7 +2,7 @@ import '../global.css';
 
 import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { NAV_THEME } from '@/lib/constants';
-import { StationProvider } from '@/lib/station-context';
+import { StationProvider, useStation } from '@/lib/station-context';
 import { Ionicons } from '@expo/vector-icons';
 import { DarkTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -16,8 +16,54 @@ const DARK_THEME: Theme = {
   colors: NAV_THEME.dark,
 };
 
-export default function RootLayout() {
+function StackNavigator() {
   const router = useRouter();
+  const { selectedStation } = useStation();
+
+  return (
+    <>
+      <StatusBar style="light" />
+      <Stack screenOptions={{
+        headerTitleAlign: 'left',
+        headerTitleStyle: { fontFamily: 'DepartureMono-Regular' },
+      }}>
+        <Stack.Screen
+          name='index'
+          options={{
+            title: selectedStation?.name && selectedStation.name.length > 30 ? selectedStation.name.slice(0, 27).concat('...') : (selectedStation?.name || 'Departures'),
+            headerLargeTitle: true,
+            headerLargeTitleStyle: { fontFamily: 'DepartureMono-Regular' },
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => router.push('/settings')}
+                className="mr-4"
+              >
+                <Ionicons name="settings-outline" size={24} color={NAV_THEME.dark.text} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Stack.Screen
+          name='settings'
+          options={{
+            title: 'Select a station',
+            presentation: 'modal',
+            headerRight: () => (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                className="mr-4"
+              >
+                <Ionicons name="checkmark" size={24} color={NAV_THEME.dark.text} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+      </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
   const hasMounted = useRef(false);
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
@@ -51,38 +97,7 @@ export default function RootLayout() {
   return (
     <StationProvider>
       <ThemeProvider value={DARK_THEME}>
-        <StatusBar style="light" />
-        <Stack>
-          <Stack.Screen
-            name='index'
-            options={{
-              title: 'Departures',
-              headerRight: () => (
-                <TouchableOpacity
-                  onPress={() => router.push('/settings')}
-                  className="mr-4"
-                >
-                  <Ionicons name="settings-outline" size={24} color={NAV_THEME.dark.text} />
-                </TouchableOpacity>
-              ),
-            }}
-          />
-          <Stack.Screen
-            name='settings'
-            options={{
-              title: 'Select a station',
-              presentation: 'modal',
-              headerRight: () => (
-                <TouchableOpacity
-                  onPress={() => router.back()}
-                  className="mr-4"
-                >
-                  <Ionicons name="checkmark" size={24} color={NAV_THEME.dark.text} />
-                </TouchableOpacity>
-              ),
-            }}
-          />
-        </Stack>
+        <StackNavigator />
       </ThemeProvider>
     </StationProvider>
   );

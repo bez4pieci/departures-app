@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Text } from '@/components/ui/text';
+import { Text, TextClassContext } from '@/components/ui/text';
 import { useStation } from '@/lib/station-context';
 import createClient from '@/utils/hafas-rest-api-client';
 import { useCallback, useEffect, useState } from 'react';
@@ -78,7 +78,7 @@ export default function Index() {
 
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   };
 
   if (error) {
@@ -104,54 +104,35 @@ export default function Index() {
   }
 
   return (
-    <View className="flex-1 bg-background px-0 py-2">
-      {/* Station Name Header */}
-      <View className="px-2 py-1 mb-1">
-        <Text className="text-lg font-bold font-departure-mono">{selectedStation.name}</Text>
-      </View>
-
-      {/* Technical Header Row */}
-      <View className="flex-row items-center border-b border-border bg-card/80 dark:bg-black/80 px-2 py-2 mb-1">
-        <Text className="flex-[1.7] text-sm text-muted-foreground tracking-widest font-departure-mono uppercase">Time / Line</Text>
-        <Text className="flex-[2.3] text-sm text-muted-foreground tracking-widest font-departure-mono uppercase">Direction</Text>
-        <Text className="w-20 text-sm text-muted-foreground tracking-widest font-departure-mono uppercase text-right">Status</Text>
-      </View>
-      <FlatList
-        data={departures}
-        renderItem={({ item }) => {
-          const isDelayed = item.when && item.plannedWhen && item.when !== item.plannedWhen;
-          const displayTime = item.when || item.plannedWhen;
-          return (
+    <FlatList
+      data={departures}
+      renderItem={({ item }) => {
+        const isDelayed = item.when && item.plannedWhen && item.when !== item.plannedWhen;
+        const displayTime = item.when || item.plannedWhen;
+        return (
+          <TextClassContext.Provider value="font-departure-mono">
             <View
-              className={`flex-row items-center border-b border-dashed border-border bg-card/60 dark:bg-black/60 px-2 py-3 font-departure-mono ${item.cancelled ? 'opacity-50' : ''}`}
+              className={`flex-row items-start border-b border-dashed border-border px-2 py-3 ${item.cancelled ? 'opacity-40' : ''}`}
             >
-              {/* Time and Line */}
-              <View className="flex-[1.7] justify-center items-start">
-                <Text className={`text-3xl font-bold font-departure-mono ${isDelayed ? 'text-orange-500' : 'text-foreground'}`}>{displayTime ? formatTime(displayTime) : '?'}</Text>
+              <View className="w-32">
+                <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{displayTime ? formatTime(displayTime) : '?'}</Text>
                 {isDelayed && item.plannedWhen && (
-                  <Text className="text-xs text-muted-foreground font-departure-mono line-through">{formatTime(item.plannedWhen)}</Text>
+                  <Text className="text-base text-muted-foreground line-through">{formatTime(item.plannedWhen)}</Text>
                 )}
-                <Text className="text-lg font-semibold font-departure-mono text-foreground mt-1">{item.line}</Text>
               </View>
-              {/* Direction */}
-              <Text className={`flex-[2.3] text-base font-departure-mono ${item.cancelled ? 'line-through text-muted-foreground' : 'text-foreground'} ml-1`}>{item.direction}</Text>
-              {/* Status */}
-              <View className="w-20 items-end">
-                {item.cancelled ? (
-                  <Text className="text-red-600 text-base font-bold font-departure-mono uppercase">Cancelled</Text>
-                ) : isDelayed ? (
-                  <Text className="text-orange-500 text-base font-bold font-departure-mono uppercase">Delayed</Text>
-                ) : null}
+              <View className="flex-1">
+                <Text className={`text-3xl font-bold ${item.cancelled && 'line-through'}`}>{item.line}</Text>
+                <Text className={`text-base font-departure-mono ml-1`}>{item.direction}</Text>
               </View>
             </View>
-          );
-        }}
-        keyExtractor={(item) => item.tripId}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        contentContainerStyle={{ paddingBottom: 8 }}
-      />
-    </View>
+          </TextClassContext.Provider>
+        );
+      }}
+      keyExtractor={(item) => item.tripId}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={{ paddingBottom: 8 }}
+    />
   );
 }
