@@ -1,13 +1,12 @@
 import { Text } from '@/components/ui/text';
+import { createClient } from 'hafas-client';
+import { profile as bvgProfile } from 'hafas-client/p/bvg';
 import { useStation } from '@/lib/station-context';
-import createClient from '@/utils/hafas-rest-api-client';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, TextInput, TouchableOpacity, View } from 'react-native';
 
-const client = createClient('http://localhost:3333', {
-    userAgent: 'bez4pieci-test',
-});
+const client = createClient(bvgProfile, 'bez4pieci-test');
 
 type Station = {
     id: string;

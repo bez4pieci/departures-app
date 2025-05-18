@@ -1,15 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Text, TextClassContext } from '@/components/ui/text';
 import { useStation } from '@/lib/station-context';
-import createClient from '@/utils/hafas-rest-api-client';
+import { createClient } from 'hafas-client';
+import { profile as bvgProfile } from 'hafas-client/p/bvg';
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, View } from "react-native";
 
-const client = createClient('http://localhost:3333', {
-  userAgent: 'bez4pieci-test',
-});
+const client = createClient(bvgProfile, 'bez4pieci-test');
 
-type Departure = {
+type FormattedDeparture = {
   tripId: string;
   line: string;
   direction: string;
@@ -21,7 +20,7 @@ type Departure = {
 
 export default function Index() {
   const { selectedStation } = useStation();
-  const [departures, setDepartures] = useState<Departure[]>([]);
+  const [departures, setDepartures] = useState<FormattedDeparture[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,14 +39,21 @@ export default function Index() {
         remarks: false,
         language: 'en',
       });
-      const formattedDepartures = results.departures.map(departure => ({
-        tripId: departure.tripId,
-        line: departure.line?.name || '?',
-        direction: departure.direction || 'Unknown',
-        plannedWhen: departure.plannedWhen,
-        when: departure.when,
-        cancelled: departure.cancelled,
-      }));
+      const formattedDepartures = results.departures.map(departure => {
+        if (!departure.tripId) {
+          console.warn('Departure is missing tripId:', departure);
+          return null;
+        }
+
+        return {
+          tripId: departure.tripId,
+          line: departure.line?.name || '?',
+          direction: departure.direction || 'Unknown',
+          plannedWhen: departure.plannedWhen,
+          when: departure.when,
+          cancelled: departure.cancelled,
+        };
+      }).filter((d): d is FormattedDeparture => d !== null);
 
       // Sort departures by actual departure time (when), falling back to planned time if when is not available
       const sortedDepartures = formattedDepartures.sort((a, b) => {
