@@ -1,3 +1,6 @@
+// Import polyfills first
+import "../polyfills";
+
 import "../global.css";
 
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
