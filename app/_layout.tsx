@@ -69,14 +69,13 @@ export default function RootLayout() {
   const hasMounted = useRef(false);
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
-  if (Platform.OS === "web") {
-    const [fontsLoaded] = useFonts({
-      "DepartureMono-Regular": require("../assets/fonts/DepartureMono-Regular.otf"),
-    });
-    if (!fontsLoaded) {
-      return null;
-    }
-  }
+  useFonts(
+    Platform.OS === "web"
+      ? {
+          "DepartureMono-Regular": require("../assets/fonts/DepartureMono-Regular.otf"),
+        }
+      : {},
+  );
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {

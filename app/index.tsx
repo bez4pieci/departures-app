@@ -4,7 +4,7 @@ import { useStation } from "@/lib/station-context";
 import { createClient } from "hafas-client";
 import { profile as bvgProfile } from "hafas-client/p/bvg";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, RefreshControl, View } from "react-native";
+import { FlatList, RefreshControl, SafeAreaView, View } from "react-native";
 
 const client = createClient(bvgProfile, "bez4pieci-test");
 
@@ -25,7 +25,6 @@ export default function Index() {
 
   const fetchDepartures = useCallback(async () => {
     if (!selectedStation) {
-      setError("Please select a station in settings");
       return;
     }
 
@@ -93,23 +92,27 @@ export default function Index() {
 
   if (error) {
     return (
-      <Card className="m-2">
-        <CardContent className="p-2">
-          <Text className="text-destructive font-departure-mono">{error}</Text>
-        </CardContent>
-      </Card>
+      <SafeAreaView>
+        <Card className="m-2">
+          <CardContent className="p-2">
+            <Text className="text-base text-muted-foreground font-departure-mono">{error}</Text>
+          </CardContent>
+        </Card>
+      </SafeAreaView>
     );
   }
 
   if (!selectedStation) {
     return (
-      <Card className="m-2">
-        <CardContent className="p-2">
-          <Text className="text-muted-foreground font-departure-mono">
-            Please select a station in settings to view departures
-          </Text>
-        </CardContent>
-      </Card>
+      <SafeAreaView>
+        <Card className="m-2">
+          <CardContent className="p-2">
+            <Text className="text-muted-foreground font-departure-mono">
+              Please select a station in settings to view departures
+            </Text>
+          </CardContent>
+        </Card>
+      </SafeAreaView>
     );
   }
 
