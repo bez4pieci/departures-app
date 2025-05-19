@@ -1,3 +1,5 @@
+<img src="docs/readme-icon@2x.png" width=250 />
+
 # Departures App
 
 A WORK IN PROGRESS mobile application for checking real-time public transport departures in Berlin using the BVG (Berliner Verkehrsbetriebe) API.
