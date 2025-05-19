@@ -367,12 +367,12 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.departures;
-				PRODUCT_NAME = departures;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bez4pieci.departures";
+				PRODUCT_NAME = "departures";
 				SWIFT_OBJC_BRIDGING_HEADER = "departures/departures-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -398,11 +398,11 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.anonymous.departures;
-				PRODUCT_NAME = departures;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.bez4pieci.departures";
+				PRODUCT_NAME = "departures";
 				SWIFT_OBJC_BRIDGING_HEADER = "departures/departures-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
