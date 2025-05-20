@@ -10,6 +10,33 @@ A WORK IN PROGRESS mobile application for checking real-time public transport de
 - 🔍 Search and select stations by name
 - 🔄 Pull-to-refresh for up-to-date departure information
 
+## Development
+
+Start development server:
+
+```
+npm start
+```
+
+Set up a iOS project and sync settings:
+
+```
+npm run prebuild:ios
+```
+
+Run development build in simulator:
+
+```
+npm run ios
+```
+
+Run development build on a connected device:
+
+```
+npm run ios:device
+```
+
+
 ## License
 
 [MIT License](LICENSE)

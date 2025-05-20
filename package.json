@@ -4,12 +4,10 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start -c",
-    "ios": "expo start -c --ios",
-    "web": "expo start -c --web",
     "lint": "expo lint",
     "prebuild:ios": "expo prebuild --platform ios",
-    "run:ios": "expo run:ios",
-    "run:ios:device": "expo run:ios --device"
+    "ios": "expo run:ios",
+    "ios:device": "expo run:ios --device"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
