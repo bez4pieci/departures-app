@@ -1,12 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Text, TextClassContext } from "@/components/ui/text";
 import { useStation } from "@/lib/station-context";
+import { ExtensionStorage } from "@bacons/apple-targets";
 import { createClient } from "hafas-client";
 import { profile as bvgProfile } from "hafas-client/p/bvg";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, RefreshControl, SafeAreaView, View } from "react-native";
 
 const client = createClient(bvgProfile, "bez4pieci-test");
+
+// Create ExtensionStorage instance for sharing data with widget
+const extensionStorage = new ExtensionStorage("group.com.bez4pieci.departures");
 
 type FormattedDeparture = {
   tripId: string;
@@ -67,6 +71,21 @@ export default function Index() {
       });
 
       setDepartures(sortedDepartures);
+
+      // Save departures to ExtensionStorage for widget use
+      try {
+        const departuresData = {
+          departures: sortedDepartures.slice(0, 5), // Limit to 5 for widget
+          stationId: selectedStation.id,
+          stationName: selectedStation.name,
+          lastUpdated: new Date().toISOString(),
+        };
+        extensionStorage.set("departures", JSON.stringify(departuresData));
+        // Trigger widget reload with fresh data
+        ExtensionStorage.reloadWidget();
+      } catch (storageError) {
+        console.log("Error saving departures to ExtensionStorage:", storageError);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch departures");
     }

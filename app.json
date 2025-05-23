@@ -13,7 +13,11 @@
     ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.bez4pieci.departures"
+      "appleTeamId": "9EPXPY3668",
+      "bundleIdentifier": "com.bez4pieci.departures",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.bez4pieci.departures"]
+      }
     },
     "android": {
       "edgeToEdgeEnabled": true,
@@ -39,10 +43,12 @@
         "expo-font",
         {
           "fonts": [
+            "./assets/fonts/DepartureMono-Regular.otf",
             "./assets/fonts/DepartureMono-Regular.otf"
           ]
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true
